@@ -1,4 +1,5 @@
 import * as fs from 'fs'
+import * as path from 'path'
 import * as core from '@actions/core'
 import * as github from '@actions/github'
 import {GetResponseDataTypeFromEndpointMethod} from '@octokit/types'
@@ -62,7 +63,12 @@ function isPathInput(text: string): boolean {
   return !(text.includes('\n') || text.includes(':'))
 }
 
-function getConfigFileContent(configPath: string): string {
+export function getConfigFileContent(configPath: string): string {
+  // Security check: prevent path traversal and absolute paths
+  if (configPath.includes('..') || path.isAbsolute(configPath)) {
+    throw new Error(`Invalid configuration file path`)
+  }
+
   if (!fs.existsSync(configPath)) {
     throw new Error(`Configuration file '${configPath}' not found`)
   }
@@ -305,4 +311,8 @@ function getErrorMessage(error: unknown): string {
   return String(error)
 }
 
-run()
+// Only run if this module is being executed directly (not imported for testing)
+if (require.main === module) {
+  run()
+}
+
