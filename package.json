@@ -54,6 +54,6 @@
   },
   "overrides": {
     "minimatch@9.0.3": "^9.0.7",
-    "undici": "^6.27.0"
+    "undici": "^6.29.1"
   }
 }
